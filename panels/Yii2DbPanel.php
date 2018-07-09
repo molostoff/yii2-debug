@@ -348,7 +348,9 @@ class Yii2DbPanel extends Yii2DebugPanel
 	 */
 	public function getExplainQuery($query, $driver)
 	{
-		if (preg_match('/^\s*SELECT/', $query)) {
+	    if($driver === 'sqlsrv')
+	       return $query;
+	    if (preg_match('/^\s*SELECT/', $query)) {
 			switch ($driver) {
 				case 'mysql': return 'EXPLAIN ' . $query;
 				case 'pgsql': return 'EXPLAIN ' . $query;
@@ -375,6 +377,32 @@ class Yii2DbPanel extends Yii2DebugPanel
 			case 'oci':
 				$connection->createCommand($procedure)->execute();
 				return $connection->createCommand('SELECT * FROM table(dbms_xplan.display)')->queryAll();
+			case 'sqlsrv':
+			    $stats = [];
+			    if(preg_match("/^\w+:Server=(\S+);Database=(\S+);?/", $connection->connectionString, $dsn)) {
+    			    $connection = sqlsrv_connect(next($dsn), [
+    			        'Database' => next($dsn),
+                        'UID' => $connection->username,
+                        'PWD' => $connection->password,
+                        'CharacterSet' => 'UTF-8',
+                        'ReturnDatesAsStrings' => true,
+                        'MultipleActiveResultSets' => true
+                    ]);
+                    if (sqlsrv_query($connection, "SET SHOWPLAN_ALL ON; ")) {
+                        $rs = sqlsrv_query($connection, $query);
+                        if ($rs) {
+                            do {
+                                while ($data = sqlsrv_fetch_array($rs, SQLSRV_FETCH_ASSOC)) {
+                                    foreach (['StmtId', 'NodeId','Parent', 'Warnings','OutputList'] as $col) {
+                                        unset($data[$col]);
+                                    }
+                                    $stats[] = $data;
+                                }
+                            } while (sqlsrv_next_result($rs));
+                        }
+                    }
+			    }
+			    return $stats;
 			default:
 				return $connection->createCommand($procedure)->queryAll();
 		}

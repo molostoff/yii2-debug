@@ -1,18 +1,23 @@
 {
-	"name": "zhuravljov/yii2-debug",
-	"description": "Yii debug toolbar",
-	"keywords": ["yii", "extension", "debug"],
-	"homepage": "https://github.com/zhuravljov/yii2-debug",
-	"type": "yii-extension",
-	"license": "BSD-3-Clause",
-	"authors": [
-		{
-			"name": "Roman Zhuravlev",
-			"email": "zhuravljov@gmail.com"
+	"name" : "molostoff/yii2-debug",
+	"description" : "Yii debug toolbar for Yii1",
+	"keywords" : [
+		"yii",
+		"extension",
+		"debug"
+	],
+	"homepage" : "https://github.com/molostoff/yii2-debug",
+	"type" : "yii-extension",
+	"license" : "BSD-3-Clause",
+	"authors" : [{
+			"name" : "Vasiliy Molostov",
+			"email" : "molostoff@gmail.com",
+			"role" : "main"
 		}
 	],
-	"require": {
-		"php": ">=5.1.0",
-		"yiisoft/yii": ">=1.1.15"
-	}
+	"require" : {
+		"php" : ">=5.1.0",
+		"yiisoft/yii" : ">=1.1.15"
+	},
+	"minimum-stability" : "dev"
 }
